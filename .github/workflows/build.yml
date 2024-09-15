@@ -5,7 +5,6 @@ on:
   push:
     branches:
       - main
-      - gh-actions
   pull_request:
 
 concurrency:
@@ -21,13 +20,11 @@ jobs:
         
       - name: Get CW
         run: |
-          mkdir CW
-          curl -o CW/license.dat -fSL ${{ secrets.CW }}/license.dat
-          curl -o CW/lmgr11.dll -fSL ${{ secrets.CW }}/lmgr11.dll
-          curl -o CW/mwasmeppc.exe -fSL ${{ secrets.CW }}/mwasmeppc.exe
-          curl -o CW/mwcceppc.exe -fSL ${{ secrets.CW }}/mwcceppc.exe
-          curl -o CW/mwldeppc.exe -fSL ${{ secrets.CW }}/mwldeppc.exe
-          set "PATH=%CD%\CW %PATH%"
+          curl -o license.dat -fSL ${{ secrets.CW }}/license.dat
+          curl -o lmgr11.dll -fSL ${{ secrets.CW }}/lmgr11.dll
+          curl -o mwasmeppc.exe -fSL ${{ secrets.CW }}/mwasmeppc.exe
+          curl -o mwcceppc.exe -fSL ${{ secrets.CW }}/mwcceppc.exe
+          curl -o mwldeppc.exe -fSL ${{ secrets.CW }}/mwldeppc.exe
 
       - name: Build
         run: python3 build.py
