@@ -1,0 +1,39 @@
+name: 'Build'
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - gh-actions
+  pull_request:
+
+concurrency:
+  group: '${{ github.workflow }} @ ${{ github.event.pull_request.head.label || github.head_ref || github.ref }}'
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        
+      - name: Get CW
+        run: |
+          mkdir CW
+          curl -o CW/license.dat -fSL ${{ secrets.CW }}/license.dat
+          curl -o CW/lmgr11.dll -fSL ${{ secrets.CW }}/lmgr11.dll
+          curl -o CW/mwasmeppc.exe -fSL ${{ secrets.CW }}/mwasmeppc.exe
+          curl -o CW/mwcceppc.exe -fSL ${{ secrets.CW }}/mwcceppc.exe
+          curl -o CW/mwldeppc.exe -fSL ${{ secrets.CW }}/mwldeppc.exe
+          set "PATH=%CD%\CW %PATH%"
+
+      - name: Build
+        run: python3 build.py
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Code.cscd
+          path: out/Code.cscd
